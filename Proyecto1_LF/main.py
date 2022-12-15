@@ -3,6 +3,11 @@ from tkinter import*
 from functools import partial
 from tkinter import Menu, filedialog, messagebox as MessageBox
 import xml.etree.ElementTree as ET
+import Validaciones
+Validar= Validaciones.Validaciones()
+
+
+
 
 
 fuente = 'Lucida Sans Typewriter'
@@ -20,7 +25,7 @@ class Ventana():
         self.bgbotones="#C69684"
         self.x=100
 
-        ADF = Button(self.window, text="ADF", font=(fuente, 10), bg=self.bgbotones, command=self.AGF_Ventana)
+        ADF = Button(self.window, text="ADF", font=(fuente, 10), bg=self.bgbotones, command=partial(Ventana.AGF_Ventana,self))
         ADF.place(x=self.x, y=75)
         ADF.config(width=20, height=2)
         GR = Button(self.window, text="GR", font=(fuente, 10), bg=self.bgbotones, command=self.GR_Ventana)
@@ -44,10 +49,8 @@ class Ventana():
         Titulo.place(x=40, y=25)
         self.bgbotones = "#C69684"
         self.x = 100
-        self.bgbotones = "#C69684"
-        self.x = 100
         self.Tamano = 12
-        crear = Button(self.windowA, text="Crear AFD", font=(fuente, 10), bg=self.bgbotones)
+        crear = Button(self.windowA, text="Crear AFD", font=(fuente, 10), bg=self.bgbotones, command=partial(Ventana.Crear_AFD,self))
         crear.place(x=self.x, y=75)
         crear.config(width=20, height=2)
         evaluar = Button(self.windowA, text="Evaluar Cadena", font=(fuente, 10), bg=self.bgbotones)
@@ -59,6 +62,93 @@ class Ventana():
         Salir = Button(self.windowA, text="Salir", font=(fuente, 10), bg=self.bgbotones)
         Salir.place(x=self.x, y=225)
         Salir.config(width=20, height=2)
+
+    def Crear_AFD(self):
+        self.nombre = StringVar()
+        self.estados = StringVar()
+        self.alfabeto = StringVar()
+        self.estadoI=  StringVar()
+        self.estadosA= StringVar()
+        self.transiciones=StringVar()
+
+        self.windowAFD = Toplevel()
+        self.windowAFD.title("EMPLEADOS")
+        self.windowAFD.geometry('400x400')
+        self.bgventana='#E9E9D3'
+        self.windowAFD['bg']=self.bgventana
+
+        Titulo = Label(self.windowAFD, text="CREAR AFD", fg='black', bg=self.bgventana, font=(fuente, self.Tamano))
+        Titulo.place(x=100, y=5)
+
+        Nombre = Label(self.windowAFD, text="Nombre", bg=self.bgventana, font=(fuente, 11))
+        Nombre.place(x=35, y=40)
+
+        txtNombre = tkinter.Entry(self.windowAFD, textvariable=self.nombre)
+        txtNombre.place(x=200, y=40)
+
+
+        Estados = Label(self.windowAFD, text="Estados", bg=self.bgventana, font=(fuente, 11))
+        Estados.place(x=35, y=80)
+
+        txtEstados = tkinter.Entry(self.windowAFD, textvariable=self.estados)
+        txtEstados.place(x=200, y=80)
+
+
+
+
+
+        Alfabeto = Label(self.windowAFD, text="Alfabeto", bg=self.bgventana, font=(fuente, 11))
+        Alfabeto.place(x=35, y=120)
+
+        txtAlfabeto = tkinter.Entry(self.windowAFD, textvariable=self.alfabeto)
+        txtAlfabeto.place(x=200, y=120)
+
+
+        EstadoInicial = Label(self.windowAFD, text="Estado Inicial", bg=self.bgventana, font=(fuente, 11))
+        EstadoInicial.place(x=35, y=160)
+
+        txtEstadoInicial = tkinter.Entry(self.windowAFD, textvariable=self.estadoI)
+        txtEstadoInicial.place(x=200, y=160)
+
+        EstadoAceptacion = Label(self.windowAFD, text="Estado Aceptacion", bg=self.bgventana, font=(fuente, 11))
+        EstadoAceptacion.place(x=35, y=200)
+
+        txtEstadoAceptacion = tkinter.Entry(self.windowAFD, textvariable=self.estadosA)
+        txtEstadoAceptacion.place(x=200, y=200)
+
+        Transiciones = Label(self.windowAFD, text="Transiciones", bg=self.bgventana, font=(fuente, 11))
+        Transiciones.place(x=35, y=240)
+
+        self.txtTransiciones = tkinter.Text(self.windowAFD,height=5,width=15)
+        self.txtTransiciones.place(x=200, y=240)
+
+        Aceptar = Button(self.windowAFD, text="Aceptar", font=(fuente, 10), bg=self.bgbotones, command=self.Verificar)
+        Aceptar.place(x=175, y=350)
+
+
+
+    def Verificar(self):
+        self.transiciones.set(self.txtTransiciones.get("1.0",END))
+        print(self.transiciones.get())
+        if Validar.validacion1(self.estados.get(), ";"):
+            next
+        else:
+            return MessageBox.showwarning("Alerta", "La cadena de Estados no es Valida")
+        if Validar.Validacion2(self.alfabeto.get(),","):
+            next
+        else:
+            return MessageBox.showwarning("Alerta", "La cadena de Alfabetos no es Valida")
+        if Validar.Existencia(self.estadoI.get(),self.estados.get()):
+            next
+        else:
+            return MessageBox.showwarning("Alerta", "El Estado Inicial no existe")
+        if Validar.Existencia(self.estadosA.get(), self.estados.get()):
+            next
+        else:
+            return MessageBox.showwarning("Alerta", "El uno de los Estados de Aceptacion no existe")
+
+
+        MessageBox.showinfo("Guardado", "AFD ha sido guardado correctamente")
 
     def GR_Ventana(self):
             self.windowG = Toplevel()
@@ -92,9 +182,7 @@ class Ventana():
         self.windowC.title("CARGAR ARCHIVOS")
         self.windowC.geometry("300x200")
         self.windowC['bg'] = '#E9E9D3'
-
-        Titulo = Label(self.windowC, text="CARGAR ARCHIVOS", fg='black', bg='#E9E9D3',
-                       font=(fuente, 12))
+        Titulo = Label(self.windowC, text="CARGAR ARCHIVOS", fg='black', bg='#E9E9D3', font=(fuente, 12))
         Titulo.place(x=75, y=25)
         self.bgbotones = "#C69684"
         self.x = 75
